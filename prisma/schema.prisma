@@ -1,0 +1,793 @@
+// ══════════════════════════════════════════════════════════════
+//  AI FILM STUDIO — PostgreSQL schema
+//  Large binary media is NEVER stored here; only metadata +
+//  object-storage keys. See src/lib/storage.
+// ══════════════════════════════════════════════════════════════
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── identity ──────────────────────────────────────────────────
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  passwordHash   String?
+  avatarColor    String   @default("#D99A32")
+  role           String   @default("owner")
+  developerMode  Boolean  @default(false)
+  theme          String   @default("dark")
+  onboardingDone Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  projects     Project[]
+  assets       Asset[]
+  generations  GenerationJob[]
+  credentials  ApiCredential[]
+  apiKeys      ApiKey[]
+  presets      ModelPreset[]
+  automations  Automation[]
+  runs         AutomationRun[]
+  versions     ProjectVersion[]
+  subscription Subscription?
+  creditTxs    CreditTx[]
+  auditLogs    AuditLog[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  userAgent String?
+  ip        String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Team {
+  id        String       @id @default(cuid())
+  name      String
+  ownerId   String
+  seats     Int          @default(1)
+  createdAt DateTime     @default(now())
+  members   TeamMember[]
+}
+
+model TeamMember {
+  id     String @id @default(cuid())
+  teamId String
+  userId String
+  role   String @default("editor")
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+}
+
+// ── production ────────────────────────────────────────────────
+model Project {
+  id               String   @id @default(cuid())
+  userId           String
+  name             String
+  slug             String
+  type             String   @default("short-film")
+  description      String   @default("")
+  stage            String   @default("idea")
+  stageStates      Json     @default("{}")
+  settings         Json     @default("{}")
+  idea             Json     @default("{}")
+  story            Json?
+  screenplay       Json?
+  worldBible       Json?
+  activeTimelineId String?
+  rev              Int      @default(1)
+  coverAssetId     String?
+  tags             String[] @default([])
+  creditsSpent     Float    @default(0)
+  generationsCount Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  lastOpenedAt     DateTime @default(now())
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  versions    ProjectVersion[]
+  characters  Character[]
+  locations   Location[]
+  scenes      Scene[]
+  shots       Shot[]
+  storyboards Storyboard[]
+  assets      Asset[]
+  generations GenerationJob[]
+  timelines   Timeline[]
+  voices      VoiceLine[]
+  sounds      SoundCue[]
+  exports     ExportJob[]
+  automations Automation[]
+  runs        AutomationRun[]
+
+  @@index([userId, updatedAt])
+}
+
+model ProjectVersion {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  rev       Int
+  label     String
+  reason    String   @default("")
+  stage     String?
+  snapshot  Json
+  sizeBytes Int      @default(0)
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, rev])
+}
+
+model Story {
+  id        String   @id @default(cuid())
+  projectId String   @unique
+  title     String
+  logline   String   @db.Text
+  premise   String   @db.Text
+  acts      Json
+  themes    String[] @default([])
+  ending    String   @db.Text
+  tone      String   @default("")
+  genre     String   @default("")
+  rev       Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Script {
+  id        String   @id @default(cuid())
+  projectId String   @unique
+  title     String
+  author    String   @default("")
+  draft     Int      @default(1)
+  logline   String   @db.Text
+  elements  Json
+  fadeIn    String?
+  fadeOut   String?
+  rev       Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Character {
+  id               String   @id @default(cuid())
+  projectId        String
+  token            String
+  name             String
+  role             String   @default("")
+  age              String   @default("")
+  description      String   @db.Text
+  personality      String   @db.Text
+  wardrobe         String   @db.Text
+  physical         String   @db.Text
+  voiceProfile     String   @default("")
+  arc              String   @db.Text
+  identityPrompt   String   @db.Text
+  locked           Boolean  @default(false)
+  approved         Boolean  @default(false)
+  referenceAssetId String?
+  lookAssetId      String?
+  looks            Json     @default("[]")
+  color            String   @default("#D99A32")
+  scenes           String[] @default([])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, token])
+  @@index([projectId])
+}
+
+model Location {
+  id                String   @id @default(cuid())
+  projectId         String
+  token             String
+  name              String
+  description       String   @db.Text
+  architecture      String   @db.Text
+  timeOfDay         String   @default("")
+  lighting          String   @default("")
+  weather           String   @default("")
+  palette           String[] @default([])
+  props             String[] @default([])
+  identityPrompt    String   @db.Text
+  locked            Boolean  @default(false)
+  approved          Boolean  @default(false)
+  referenceAssetIds String[] @default([])
+  assetId           String?
+  scenes            String[] @default([])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, token])
+  @@index([projectId])
+}
+
+model WorldBible {
+  id          String   @id @default(cuid())
+  projectId   String   @unique
+  era         String   @db.Text
+  geography   String   @db.Text
+  rules       String   @db.Text
+  moodBoard   String   @db.Text
+  colorScript Json     @default("[]")
+  updatedAt   DateTime @updatedAt
+}
+
+model Scene {
+  id           String   @id @default(cuid())
+  projectId    String
+  index        Int
+  heading      String
+  intExt       String   @default("INT.")
+  locationName String   @default("")
+  timeOfDay    String   @default("")
+  locationId   String?
+  durationSec  Float    @default(5)
+  characterIds String[] @default([])
+  emotion      String   @default("")
+  lighting     String   @default("")
+  props        String[] @default([])
+  dialogue     String   @db.Text
+  action       String   @db.Text
+  shotIds      String[] @default([])
+  elementIds   String[] @default([])
+  colorPalette String[] @default([])
+  music        String   @default("")
+  approved     Boolean  @default(false)
+
+  project Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  shots   Shot[]
+  voices  VoiceLine[]
+  sounds  SoundCue[]
+
+  @@unique([projectId, index])
+  @@index([projectId])
+}
+
+model Shot {
+  id             String   @id @default(cuid())
+  projectId      String
+  sceneId        String
+  index          Int
+  size           String   @default("Medium")
+  lens           String   @default("35mm")
+  move           String   @default("Static")
+  angle          String   @default("Eye level")
+  durationSec    Float    @default(5)
+  description    String   @db.Text
+  dialogue       String   @db.Text
+  lighting       String   @default("")
+  prompt         String   @db.Text
+  negativePrompt String   @db.Text
+  seed           Int      @default(0)
+  frameAssetId   String?
+  videoAssetId   String?
+  frameStatus    String   @default("none")
+  videoStatus    String   @default("none")
+  variations     String[] @default([])
+  take           Int      @default(1)
+  notes          String   @default("")
+
+  project Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  scene   Scene       @relation(fields: [sceneId], references: [id], onDelete: Cascade)
+  board   Storyboard?
+
+  @@unique([sceneId, index])
+  @@index([projectId])
+  @@index([sceneId])
+}
+
+model Storyboard {
+  id        String   @id @default(cuid())
+  shotId    String   @unique
+  projectId String
+  prompt    String   @db.Text
+  seed      Int      @default(0)
+  approved  Boolean  @default(false)
+  rejected  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  shot    Shot    @relation(fields: [shotId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id])
+}
+
+model Asset {
+  id             String   @id @default(cuid())
+  projectId      String?
+  userId         String
+  name           String
+  kind           String
+  mimeType       String
+  storageKey     String
+  url            String
+  thumbnailUrl   String?
+  bytes          Int      @default(0)
+  width          Int?
+  height         Int?
+  durationSec    Float?
+  modelId        String?
+  providerId     String?
+  generationId   String?
+  prompt         String   @default("") @db.Text
+  negativePrompt String   @default("") @db.Text
+  seed           Int      @default(0)
+  version        Int      @default(1)
+  tags           String[] @default([])
+  meta           Json     @default("{}")
+  demo           Boolean  @default(false)
+  status         String   @default("ready")
+  refIds         Json     @default("{}")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  project    Project?       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generation GenerationJob? @relation(fields: [generationId], references: [id], onDelete: SetNull)
+  clips      TimelineClip[]
+
+  @@index([projectId, kind])
+  @@index([userId, createdAt])
+}
+
+model GenerationJob {
+  id              String    @id @default(cuid())
+  projectId       String?
+  userId          String
+  kind            String
+  label           String
+  sublabel        String    @default("")
+  status          String    @default("queued")
+  progress        Float     @default(0)
+  modelId         String?
+  providerId      String?
+  presetId        String?
+  input           Json      @default("{}")
+  output          Json      @default("{}")
+  error           Json?
+  credits         Float     @default(0)
+  priority        Int       @default(0)
+  attempts        Int       @default(0)
+  maxAttempts     Int       @default(2)
+  queuePosition   Int       @default(0)
+  stage           String?
+  automationRunId String?
+  logs            Json      @default("[]")
+  demo            Boolean   @default(false)
+  parentJobId     String?
+  batchId         String?
+  createdAt       DateTime  @default(now())
+  startedAt       DateTime?
+  finishedAt      DateTime?
+
+  project Project?       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  run     AutomationRun? @relation(fields: [automationRunId], references: [id], onDelete: SetNull)
+  assets  Asset[]
+
+  @@index([userId, status, createdAt])
+  @@index([projectId])
+}
+
+// ── AI registry ───────────────────────────────────────────────
+model AiProvider {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  driver       String
+  baseUrl      String?
+  enabled      Boolean  @default(true)
+  builtIn      Boolean  @default(false)
+  capabilities String[] @default([])
+  docsUrl      String?
+  envKeyVar    String?
+  notes        String   @default("")
+  priority     Int      @default(100)
+  createdAt    DateTime @default(now())
+
+  models      ModelDescriptor[]
+  credentials ApiCredential[]
+}
+
+/// Inbound keys for the public REST API (`/api/open/*`). Only the hash is
+/// stored — the plaintext is shown once at creation and never persisted, so a
+/// database leak does not hand out working credentials. Distinct from
+/// ApiCredential, which is an OUTBOUND vendor key.
+model ApiKey {
+  id         String    @id @default(cuid())
+  userId     String
+  name       String
+  /// `afs_` plus the first characters, so keys can be told apart in a list.
+  prefix     String
+  keyHash    String    @unique
+  scopes     String[]  @default([])
+  enabled    Boolean   @default(true)
+  expiresAt  DateTime?
+  lastUsedAt DateTime?
+  lastUsedIp String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ModelDescriptor {
+  id                   String   @id @default(cuid())
+  providerId           String
+  name                 String
+  driverModel          String
+  capabilities         String[] @default([])
+  kind                 String   @default("text")
+  quality              Int      @default(3)
+  speed                Int      @default(3)
+  costPerUnit          Float    @default(0)
+  unit                 String   @default("1k tokens")
+  contextWindow        Int?
+  maxDurationSec       Float?
+  supportedRatios      String[] @default([])
+  supportedResolutions String[] @default([])
+  features             String[] @default([])
+  enabled              Boolean  @default(true)
+  isDefault            Boolean  @default(false)
+  demo                 Boolean  @default(false)
+  custom               Boolean  @default(false)
+  config               Json     @default("{}")
+  createdAt            DateTime @default(now())
+
+  provider AiProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, driverModel])
+  @@index([kind, enabled])
+}
+
+model ApiCredential {
+  id             String    @id @default(cuid())
+  providerId     String
+  userId         String
+  label          String    @default("Default")
+  encryptedKey   String
+  iv             String
+  tag            String
+  maskedKey      String
+  keyFingerprint String
+  baseUrl        String?
+  extra          Json      @default("{}")
+  status         String    @default("untested")
+  lastTestedAt   DateTime?
+  lastError      String?
+  scopes         String[]  @default([])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  provider AiProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, userId, label])
+}
+
+model ModelPreset {
+  id           String   @id @default(cuid())
+  userId       String?
+  name         String
+  description  String   @default("")
+  builtIn      Boolean  @default(false)
+  textModel    String?
+  imageModel   String?
+  videoModel   String?
+  voiceModel   String?
+  musicModel   String?
+  soundModel   String?
+  upscaleModel String?
+  editingModel String?
+  strategy     String   @default("quality")
+  defaults     Json     @default("{}")
+  fallbacks    Json     @default("{}")
+  createdAt    DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ── timeline / NLE ────────────────────────────────────────────
+model Timeline {
+  id          String   @id @default(cuid())
+  projectId   String
+  name        String   @default("Main")
+  fps         Int      @default(24)
+  width       Int      @default(1920)
+  height      Int      @default(1080)
+  aspectRatio String   @default("16:9")
+  markers     Json     @default("[]")
+  inPoint     Float?
+  outPoint    Float?
+  grade       Json     @default("{}")
+  nested      Json     @default("[]")
+  durationSec Float    @default(0)
+  isPrimary   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tracks  TimelineTrack[]
+  exports ExportJob[]
+
+  @@index([projectId])
+}
+
+model TimelineTrack {
+  id         String  @id @default(cuid())
+  timelineId String
+  kind       String  @default("video")
+  name       String
+  index      Int
+  height     Int     @default(56)
+  muted      Boolean @default(false)
+  solo       Boolean @default(false)
+  locked     Boolean @default(false)
+  hidden     Boolean @default(false)
+  volume     Float   @default(1)
+  pan        Float   @default(0)
+
+  timeline Timeline       @relation(fields: [timelineId], references: [id], onDelete: Cascade)
+  clips    TimelineClip[]
+
+  @@unique([timelineId, index])
+}
+
+model TimelineClip {
+  id            String   @id @default(cuid())
+  trackId       String
+  assetId       String?
+  kind          String   @default("video")
+  name          String   @default("Clip")
+  srcUrl        String?
+  demo          Boolean  @default(false)
+  start         Float
+  duration      Float
+  inPoint       Float    @default(0)
+  outPoint      Float    @default(0)
+  speed         Float    @default(1)
+  opacity       Float    @default(1)
+  blend         String   @default("normal")
+  transform     Json     @default("{}")
+  volume        Float    @default(1)
+  pan           Float    @default(0)
+  fadeIn        Float    @default(0)
+  fadeOut       Float    @default(0)
+  transitionIn  String   @default("none")
+  transitionOut String   @default("none")
+  transitionDur Float    @default(0.5)
+  effects       Json     @default("[]")
+  grade         Json?
+  freeze        Json     @default("[]")
+  textData      Json?
+  markers       Json     @default("[]")
+  locked        Boolean  @default(false)
+  muted         Boolean  @default(false)
+  linked        String[] @default([])
+  waveformPeaks Json?
+  color         String   @default("#3A352E")
+  meta          Json     @default("{}")
+
+  track TimelineTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  asset Asset?        @relation(fields: [assetId], references: [id], onDelete: SetNull)
+
+  @@index([trackId, start])
+}
+
+model VoiceLine {
+  id          String  @id @default(cuid())
+  projectId   String
+  sceneId     String?
+  characterId String?
+  speaker     String
+  text        String  @db.Text
+  voiceId     String  @default("narrator")
+  language    String  @default("en")
+  emotion     String  @default("neutral")
+  speed       Float   @default(1)
+  pitch       Float   @default(0)
+  stability   Float   @default(0.6)
+  clarity     Float   @default(0.75)
+  assetId     String?
+  status      String  @default("none")
+  take        Int     @default(1)
+  durationSec Float   @default(0)
+  modelId     String?
+  demo        Boolean @default(false)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  scene   Scene?  @relation(fields: [sceneId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+}
+
+model SoundCue {
+  id           String   @id @default(cuid())
+  projectId    String
+  sceneId      String?
+  kind         String   @default("sfx")
+  name         String
+  description  String   @db.Text
+  prompt       String   @db.Text
+  startSec     Float    @default(0)
+  durationSec  Float    @default(3)
+  volume       Float    @default(0.8)
+  loop         Boolean  @default(false)
+  assetId      String?
+  status       String   @default("none")
+  modelId      String?
+  demo         Boolean  @default(false)
+  autoDetected Boolean  @default(true)
+  tags         String[] @default([])
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  scene   Scene?  @relation(fields: [sceneId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+}
+
+model ExportJob {
+  id          String    @id @default(cuid())
+  projectId   String
+  timelineId  String
+  label       String
+  format      String    @default("mp4")
+  codec       String    @default("h264")
+  resolution  String    @default("1080p")
+  fps         Int       @default(24)
+  aspectRatio String    @default("16:9")
+  quality     String    @default("high")
+  bitrate     Int       @default(12)
+  status      String    @default("queued")
+  progress    Float     @default(0)
+  engine      String    @default("browser")
+  assetId     String?
+  error       String?
+  rangeIn     Float?
+  rangeOut    Float?
+  createdAt   DateTime  @default(now())
+  finishedAt  DateTime?
+
+  project  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  timeline Timeline @relation(fields: [timelineId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+}
+
+// ── automation ────────────────────────────────────────────────
+model Automation {
+  id              String   @id @default(cuid())
+  projectId       String?
+  userId          String
+  name            String
+  description     String   @default("")
+  nodes           Json     @default("[]")
+  edges           Json     @default("[]")
+  trigger         String   @default("manual")
+  schedule        String?
+  maxCostCredits  Float    @default(500)
+  requireApproval Boolean  @default(true)
+  enabled         Boolean  @default(true)
+  lastRunId       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  project Project?        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  runs    AutomationRun[]
+}
+
+model AutomationRun {
+  id            String    @id @default(cuid())
+  automationId  String
+  projectId     String?
+  userId        String
+  status        String    @default("running")
+  currentNodeId String?
+  visited       String[]  @default([])
+  progress      Float     @default(0)
+  creditsUsed   Float     @default(0)
+  error         String?
+  review        Json?
+  logs          Json      @default("[]")
+  startedAt     DateTime  @default(now())
+  finishedAt    DateTime?
+
+  automation Automation      @relation(fields: [automationId], references: [id], onDelete: Cascade)
+  project    Project?        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs       GenerationJob[]
+
+  @@index([status, startedAt])
+}
+
+// ── commerce ──────────────────────────────────────────────────
+model Subscription {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  planId            String    @default("free")
+  status            String    @default("active")
+  credits           Float     @default(120)
+  creditsLifetime   Float     @default(0)
+  renewsAt          DateTime?
+  cancelAtPeriodEnd Boolean   @default(false)
+  providerRef       String?
+  paymentProvider   String    @default("internal")
+  startedAt         DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CreditTx {
+  id           String   @id @default(cuid())
+  userId       String
+  amount       Float
+  balanceAfter Float
+  kind         String   @default("spend")
+  refType      String   @default("")
+  refId        String   @default("")
+  description  String   @default("")
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Invoice {
+  id          String   @id @default(cuid())
+  userId      String
+  number      String
+  amount      Float
+  currency    String   @default("USD")
+  status      String   @default("paid")
+  planName    String
+  periodStart DateTime
+  periodEnd   DateTime
+  issuedAt    DateTime @default(now())
+  pdfKey      String?
+}
+
+// ── system ────────────────────────────────────────────────────
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  ip        String?
+  meta      Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+model KvStore {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}

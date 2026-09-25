@@ -1,0 +1,236 @@
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="80" y1="40" x2="1120" y2="660" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0D0F0E"/>
+      <stop offset="0.5" stop-color="#080A09"/>
+      <stop offset="1" stop-color="#030404"/>
+    </linearGradient>
+    <linearGradient id="lime" x1="250" y1="150" x2="950" y2="570" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DFFF00"/>
+      <stop offset="0.5" stop-color="#A8FF3E"/>
+      <stop offset="1" stop-color="#39FF14"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="white" stop-opacity=".09"/>
+      <stop offset="1" stop-color="white" stop-opacity=".015"/>
+    </linearGradient>
+    <linearGradient id="cardBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="white" stop-opacity=".18"/>
+      <stop offset="0.5" stop-color="white" stop-opacity=".04"/>
+      <stop offset="1" stop-color="white" stop-opacity=".12"/>
+    </linearGradient>
+    <linearGradient id="glowLine" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DFFF00" stop-opacity="0"/>
+      <stop offset="0.2" stop-color="#DFFF00" stop-opacity=".6"/>
+      <stop offset="0.5" stop-color="#39FF14" stop-opacity=".8"/>
+      <stop offset="0.8" stop-color="#DFFF00" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#DFFF00" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="timelineGrad" x1="770" y1="0" x2="1068" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DFFF00"/>
+      <stop offset="1" stop-color="#39FF14"/>
+    </linearGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="12" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowSoft" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="20" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="20" stdDeviation="28" flood-color="#000" flood-opacity=".6"/>
+    </filter>
+    <filter id="innerGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="cardClip1">
+      <rect x="72" y="80" width="300" height="530" rx="26"/>
+    </clipPath>
+    <clipPath id="cardClip2">
+      <rect x="394" y="80" width="300" height="530" rx="26"/>
+    </clipPath>
+    <clipPath id="cardClip3">
+      <rect x="716" y="80" width="412" height="530" rx="26"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="700" rx="36" fill="url(#bg)"/>
+
+  <!-- Ambient glows -->
+  <circle cx="920" cy="120" r="200" fill="#00E676" opacity=".04" filter="url(#glowSoft)"/>
+  <circle cx="260" cy="560" r="210" fill="#00D9FF" opacity=".03" filter="url(#glowSoft)"/>
+  <circle cx="600" cy="350" r="280" fill="#DFFF00" opacity=".012" filter="url(#glowSoft)"/>
+
+  <!-- Subtle grid pattern -->
+  <g opacity=".02" stroke="white" stroke-width="0.5">
+    <line x1="0" y1="80" x2="1200" y2="80"/>
+    <line x1="0" y1="610" x2="1200" y2="610"/>
+    <line x1="72" y1="0" x2="72" y2="700"/>
+    <line x1="372" y1="0" x2="372" y2="700"/>
+    <line x1="694" y1="0" x2="694" y2="700"/>
+    <line x1="1128" y1="0" x2="1128" y2="700"/>
+  </g>
+
+  <!-- ====== CARDS ====== -->
+  <g filter="url(#shadow)">
+    <rect x="72" y="80" width="300" height="530" rx="26" fill="url(#glass)" stroke="url(#cardBorder)" stroke-width="1.2"/>
+    <rect x="394" y="80" width="300" height="530" rx="26" fill="url(#glass)" stroke="url(#cardBorder)" stroke-width="1.2"/>
+    <rect x="716" y="80" width="412" height="530" rx="26" fill="url(#glass)" stroke="url(#cardBorder)" stroke-width="1.2"/>
+  </g>
+
+  <!-- Card inner top highlights -->
+  <g clip-path="url(#cardClip1)">
+    <ellipse cx="222" cy="80" rx="200" ry="60" fill="white" opacity=".02"/>
+    <path d="M72 80Q222 125 372 80" stroke="white" stroke-opacity=".04" fill="none"/>
+  </g>
+  <g clip-path="url(#cardClip2)">
+    <ellipse cx="544" cy="80" rx="200" ry="60" fill="white" opacity=".02"/>
+    <path d="M394 80Q544 125 694 80" stroke="white" stroke-opacity=".04" fill="none"/>
+  </g>
+  <g clip-path="url(#cardClip3)">
+    <ellipse cx="922" cy="80" rx="250" ry="60" fill="white" opacity=".02"/>
+    <path d="M716 80Q922 125 1128 80" stroke="white" stroke-opacity=".04" fill="none"/>
+  </g>
+
+  <!-- ====== CARD 1: MUSIC ====== -->
+  <g>
+    <circle cx="222" cy="200" r="66" fill="#0E1210" stroke="#DFFF00" stroke-opacity=".4" stroke-width="1.5"/>
+    <circle cx="222" cy="200" r="60" fill="none" stroke="#DFFF00" stroke-opacity=".08" stroke-width="0.5" stroke-dasharray="4 6"/>
+
+    <!-- Music note illustration -->
+    <path d="M232 168V210" stroke="#DFFF00" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/>
+    <path d="M232 168C232 160 246 156 252 162" stroke="#DFFF00" stroke-opacity=".5" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <ellipse cx="226" cy="213" rx="9" ry="6" fill="#DFFF00" opacity=".4"/>
+    <ellipse cx="252" cy="165" rx="7" ry="5" fill="#DFFF00" opacity=".25"/>
+
+    <!-- Waveform -->
+    <path d="M196 240H204M210 232V248M216 236V244M222 228V252M228 238V246M234 232V248M240 240H248" stroke="#DFFF00" stroke-opacity=".25" stroke-width="1.5" stroke-linecap="round"/>
+
+    <text x="104" y="391" fill="white" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="650" letter-spacing="0.5">MUSIC</text>
+    <text x="104" y="417" fill="#6B736E" font-family="Inter,Arial,sans-serif" font-size="13" letter-spacing="0.5">Track analyzed</text>
+
+    <circle cx="104" cy="445" r="6" fill="#39FF14" opacity=".9">
+      <animate attributeName="opacity" values="0.9;0.3;0.9" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <text x="118" y="450" fill="#A7ADA9" font-family="Inter,Arial,sans-serif" font-size="13">BPM · key · beat grid</text>
+
+    <rect x="104" y="455" width="40" height="3" rx="1.5" fill="#39FF14" opacity=".4"/>
+  </g>
+
+  <!-- ====== CARD 2: SCENES ====== -->
+  <g>
+    <circle cx="544" cy="200" r="66" fill="#0E1210" stroke="#00E6FF" stroke-opacity=".4" stroke-width="1.5"/>
+    <circle cx="544" cy="200" r="60" fill="none" stroke="#00E6FF" stroke-opacity=".08" stroke-width="0.5" stroke-dasharray="4 6"/>
+
+    <!-- Scene / film strip illustration -->
+    <rect x="514" y="162" width="60" height="76" rx="6" fill="#0E1210" stroke="#00E6FF" stroke-opacity=".25" stroke-width="1"/>
+    <rect x="520" y="170" width="48" height="20" rx="3" fill="#00E6FF" opacity=".08"/>
+    <rect x="520" y="194" width="48" height="20" rx="3" fill="#00E6FF" opacity=".06"/>
+    <rect x="520" y="218" width="48" height="12" rx="3" fill="#00E6FF" opacity=".04"/>
+    <circle cx="524" cy="168" r="2" fill="#00E6FF" opacity=".3"/>
+    <circle cx="564" cy="168" r="2" fill="#00E6FF" opacity=".3"/>
+    <circle cx="524" cy="232" r="2" fill="#00E6FF" opacity=".3"/>
+    <circle cx="564" cy="232" r="2" fill="#00E6FF" opacity=".3"/>
+
+    <text x="426" y="391" fill="white" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="650" letter-spacing="0.5">SCENES</text>
+    <text x="426" y="417" fill="#6B736E" font-family="Inter,Arial,sans-serif" font-size="13" letter-spacing="0.5">Timeline mapped</text>
+
+    <circle cx="426" cy="445" r="6" fill="#00E6FF" opacity=".9">
+      <animate attributeName="opacity" values="0.9;0.3;0.9" dur="3s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+    <text x="440" y="450" fill="#A7ADA9" font-family="Inter,Arial,sans-serif" font-size="13">Mood · lighting · palette</text>
+
+    <rect x="426" y="455" width="40" height="3" rx="1.5" fill="#00E6FF" opacity=".4"/>
+  </g>
+
+  <!-- ====== CARD 3: SHOTS ====== -->
+  <g>
+    <!-- Shot grid -->
+    <rect x="790" y="135" width="264" height="130" rx="12" fill="#0A0D0C" stroke="white" stroke-opacity=".06"/>
+    <rect x="790" y="135" width="264" height="130" rx="12" fill="url(#glass)"/>
+
+    <!-- Shot 1 -->
+    <rect x="802" y="147" width="76" height="52" rx="6" fill="#141817" stroke="#DFFF00" stroke-opacity=".15" stroke-width="0.8"/>
+    <rect x="810" y="157" width="20" height="30" rx="3" fill="#DFFF00" opacity=".15"/>
+    <path d="M814 180H826" stroke="#DFFF00" stroke-opacity=".4" stroke-width="1"/>
+    <text x="812" y="210" fill="#4A524E" font-family="Inter,Arial,sans-serif" font-size="8" letter-spacing="1">01</text>
+
+    <!-- Shot 2 -->
+    <rect x="888" y="147" width="76" height="52" rx="6" fill="#141817" stroke="#DFFF00" stroke-opacity=".15" stroke-width="0.8"/>
+    <circle cx="926" cy="168" r="12" fill="#DFFF00" opacity=".12"/>
+    <path d="M920 168H932M926 162V174" stroke="#DFFF00" stroke-opacity=".3" stroke-width="1"/>
+    <text x="898" y="210" fill="#4A524E" font-family="Inter,Arial,sans-serif" font-size="8" letter-spacing="1">02</text>
+
+    <!-- Shot 3 -->
+    <rect x="974" y="147" width="76" height="52" rx="6" fill="#141817" stroke="#DFFF00" stroke-opacity=".15" stroke-width="0.8"/>
+    <rect x="988" y="158" width="48" height="6" rx="2" fill="#DFFF00" opacity=".15"/>
+    <rect x="988" y="170" width="32" height="6" rx="2" fill="#DFFF00" opacity=".1"/>
+    <rect x="988" y="182" width="40" height="6" rx="2" fill="#DFFF00" opacity=".08"/>
+    <text x="984" y="210" fill="#4A524E" font-family="Inter,Arial,sans-serif" font-size="8" letter-spacing="1">03</text>
+
+    <!-- Shot 4 -->
+    <rect x="802" y="215" width="76" height="40" rx="6" fill="#0E1210" stroke="#39413D" stroke-opacity=".3" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <text x="812" y="238" fill="#2E3431" font-family="Inter,Arial,sans-serif" font-size="8" letter-spacing="1">04</text>
+    <text x="812" y="250" fill="#2E3431" font-family="Inter,Arial,sans-serif" font-size="7">pending</text>
+
+    <!-- Shot 5 -->
+    <rect x="888" y="215" width="76" height="40" rx="6" fill="#0E1210" stroke="#39413D" stroke-opacity=".3" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <text x="898" y="238" fill="#2E3431" font-family="Inter,Arial,sans-serif" font-size="8" letter-spacing="1">05</text>
+
+    <!-- Shot 6 -->
+    <rect x="974" y="215" width="76" height="40" rx="6" fill="#0E1210" stroke="#39413D" stroke-opacity=".3" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <text x="984" y="238" fill="#2E3431" font-family="Inter,Arial,sans-serif" font-size="8" letter-spacing="1">06</text>
+
+    <!-- EDIT text -->
+    <text x="750" y="300" fill="#6B736E" font-family="Inter,Arial,sans-serif" font-size="11" letter-spacing="3">EDIT</text>
+    <line x1="750" y1="308" x2="810" y2="308" stroke="#39FF14" stroke-opacity=".15" stroke-width="1"/>
+
+    <!-- Progress track -->
+    <line x1="785" y1="350" x2="1060" y2="350" stroke="#2A302D" stroke-width="2" stroke-linecap="round"/>
+    <line x1="785" y1="350" x2="975" y2="350" stroke="url(#timelineGrad)" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Progress dots -->
+    <circle cx="785" cy="350" r="10" fill="url(#lime)" filter="url(#innerGlow)"/>
+    <circle cx="785" cy="350" r="4" fill="white"/>
+
+    <circle cx="880" cy="350" r="9" fill="url(#lime)"/>
+    <circle cx="880" cy="350" r="3.5" fill="white" opacity=".9"/>
+
+    <circle cx="975" cy="350" r="9" fill="url(#lime)"/>
+    <circle cx="975" cy="350" r="3.5" fill="white" opacity=".9"/>
+
+    <circle cx="1060" cy="350" r="8" fill="#1E2421" stroke="#39413D" stroke-width="2"/>
+
+    <!-- Stage labels -->
+    <text x="770" y="384" fill="white" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="600">MUSIC</text>
+    <text x="865" y="384" fill="#9BA29E" font-family="Inter,Arial,sans-serif" font-size="13">SCENES</text>
+    <text x="960" y="384" fill="#9BA29E" font-family="Inter,Arial,sans-serif" font-size="13">SHOTS</text>
+    <text x="1042" y="384" fill="#5A625E" font-family="Inter,Arial,sans-serif" font-size="13">EDIT</text>
+
+    <!-- Progress bar -->
+    <rect x="750" y="398" width="344" height="4" rx="2" fill="#1A1E1C"/>
+    <rect x="750" y="398" width="248" height="4" rx="2" fill="url(#lime)" opacity=".6"/>
+
+    <!-- Beat-sync badge -->
+    <rect x="750" y="420" width="344" height="48" rx="15" fill="#DFFF00" fill-opacity=".05" stroke="#DFFF00" stroke-opacity=".25"/>
+
+    <!-- Waveform icon -->
+    <path d="M775 444H780M784 436V452M788 440V448M792 432V456M796 438V450M800 434V454M804 442V446M808 438V450" stroke="#DFFF00" stroke-width="2" stroke-linecap="round" stroke-opacity=".8"/>
+
+    <text x="820" y="445" fill="#D4E87A" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="600" letter-spacing="1">BEAT-SYNCED CUTTING</text>
+
+    <text x="820" y="460" fill="#5A625E" font-family="Inter,Arial,sans-serif" font-size="10" letter-spacing="0.5">Auto-cut to beat · transitions on bars</text>
+  </g>
+
+  <!-- ====== BOTTOM DECORATIVE ====== -->
+  <path d="M74 610H1126" stroke="url(#glowLine)" stroke-opacity=".15" stroke-width="1"/>
+  <circle cx="74" cy="610" r="3" fill="#DFFF00" opacity=".6"/>
+
+  <path d="M74 625H114" stroke="#DFFF00" stroke-opacity=".1" stroke-width="1"/>
+  <path d="M1086 625H1126" stroke="#DFFF00" stroke-opacity=".1" stroke-width="1"/>
+
+  <text x="1080" y="655" fill="#3A403D" font-family="Inter,Arial,sans-serif" font-size="10" letter-spacing="2" text-anchor="end">V2.1</text>
+</svg>

@@ -1,0 +1,145 @@
+# ══════════════════════════════════════════════════════════════
+#  AI Film Studio — full production stack
+#
+#    docker compose up -d
+#    docker compose exec app npx prisma db push     # first run only
+#
+#  Brings up: PostgreSQL, Redis, MinIO (S3-compatible), the web app and a
+#  separate media worker. Everything talks over an internal network; only the
+#  app port is published.
+# ══════════════════════════════════════════════════════════════
+name: ai-film-studio
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: afs
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-afs_local_dev_password}
+      POSTGRES_DB: aifilmstudio
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U afs -d aifilmstudio"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [internal]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [internal]
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-afs}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-afs_local_dev_password}
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+    networks: [internal]
+
+  # One-shot: create the media bucket before the app starts.
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio: { condition: service_healthy }
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 $${MINIO_ROOT_USER:-afs} $${MINIO_ROOT_PASSWORD:-afs_local_dev_password} &&
+      mc mb --ignore-existing local/aifilmstudio &&
+      mc anonymous set download local/aifilmstudio || true
+      "
+    networks: [internal]
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+      minio:    { condition: service_healthy }
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      # ── database ───────────────────────────────────────────
+      DATABASE_URL: postgresql://afs:${POSTGRES_PASSWORD:-afs_local_dev_password}@postgres:5432/aifilmstudio?schema=public
+      AFS_DB_DRIVER: prisma
+      # ── object storage (S3-compatible) ─────────────────────
+      AFS_STORAGE_DRIVER: s3
+      AWS_S3_BUCKET: aifilmstudio
+      AWS_REGION: us-east-1
+      AWS_S3_ENDPOINT: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-afs}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-afs_local_dev_password}
+      # ── queue ──────────────────────────────────────────────
+      AFS_QUEUE_DRIVER: memory
+      REDIS_URL: redis://redis:6379
+      AFS_WORKER_MODE: external        # heavy exports go to the worker service
+      AFS_WORKER_CONCURRENCY: 4
+      # ── security: set these in .env, never commit real values ──
+      AFS_ENCRYPTION_KEY: ${AFS_ENCRYPTION_KEY:?set AFS_ENCRYPTION_KEY in .env}
+      AFS_SESSION_SECRET: ${AFS_SESSION_SECRET:?set AFS_SESSION_SECRET in .env}
+      AFS_AUTH_MODE: ${AFS_AUTH_MODE:-open}
+      # ── provider keys (optional; without them the built-in engine renders previs) ──
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      REPLICATE_API_TOKEN: ${REPLICATE_API_TOKEN:-}
+      FAL_KEY: ${FAL_KEY:-}
+      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-}
+      COMFYUI_URL: ${COMFYUI_URL:-}
+      NODE_OPTIONS: --max-old-space-size=1024
+    volumes:
+      - app_data:/data
+    networks: [internal]
+
+  worker:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      app: { condition: service_started }
+    command: ["node", "--import", "tsx", "src/workers/runner.ts"]
+    environment:
+      DATABASE_URL: postgresql://afs:${POSTGRES_PASSWORD:-afs_local_dev_password}@postgres:5432/aifilmstudio?schema=public
+      AFS_DB_DRIVER: prisma
+      AFS_STORAGE_DRIVER: s3
+      AWS_S3_BUCKET: aifilmstudio
+      AWS_REGION: us-east-1
+      AWS_S3_ENDPOINT: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-afs}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-afs_local_dev_password}
+      AFS_WORKER_MODE: external
+      AFS_ENCRYPTION_KEY: ${AFS_ENCRYPTION_KEY:?set AFS_ENCRYPTION_KEY in .env}
+      AFS_SESSION_SECRET: ${AFS_SESSION_SECRET:?set AFS_SESSION_SECRET in .env}
+      FFMPEG_PATH: /usr/bin/ffmpeg
+      NODE_OPTIONS: --max-old-space-size=1536
+    volumes:
+      - app_data:/data
+    networks: [internal]
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  app_data:
+
+networks:
+  internal:
+    driver: bridge

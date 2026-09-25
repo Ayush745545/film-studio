@@ -1,0 +1,221 @@
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="80" y1="40" x2="1120" y2="660" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0D0F0E"/>
+      <stop offset="0.5" stop-color="#080A09"/>
+      <stop offset="1" stop-color="#030404"/>
+    </linearGradient>
+    <linearGradient id="lime" x1="250" y1="150" x2="950" y2="570" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DFFF00"/>
+      <stop offset="0.5" stop-color="#A8FF3E"/>
+      <stop offset="1" stop-color="#39FF14"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="white" stop-opacity=".09"/>
+      <stop offset="1" stop-color="white" stop-opacity=".015"/>
+    </linearGradient>
+    <linearGradient id="cardBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="white" stop-opacity=".18"/>
+      <stop offset="0.5" stop-color="white" stop-opacity=".04"/>
+      <stop offset="1" stop-color="white" stop-opacity=".12"/>
+    </linearGradient>
+    <linearGradient id="glowLine" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DFFF00" stop-opacity="0"/>
+      <stop offset="0.2" stop-color="#DFFF00" stop-opacity=".6"/>
+      <stop offset="0.5" stop-color="#39FF14" stop-opacity=".8"/>
+      <stop offset="0.8" stop-color="#DFFF00" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#DFFF00" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="timelineGrad" x1="770" y1="0" x2="1068" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DFFF00"/>
+      <stop offset="1" stop-color="#39FF14"/>
+    </linearGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="12" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowSoft" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="20" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="20" stdDeviation="28" flood-color="#000" flood-opacity=".6"/>
+    </filter>
+    <filter id="innerGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="cardClip1">
+      <rect x="72" y="80" width="300" height="530" rx="26"/>
+    </clipPath>
+    <clipPath id="cardClip2">
+      <rect x="394" y="80" width="300" height="530" rx="26"/>
+    </clipPath>
+    <clipPath id="cardClip3">
+      <rect x="716" y="80" width="412" height="530" rx="26"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="700" rx="36" fill="url(#bg)"/>
+
+  <!-- Ambient glows -->
+  <circle cx="920" cy="120" r="200" fill="#00E676" opacity=".04" filter="url(#glowSoft)"/>
+  <circle cx="260" cy="560" r="210" fill="#00D9FF" opacity=".03" filter="url(#glowSoft)"/>
+  <circle cx="600" cy="350" r="280" fill="#DFFF00" opacity=".012" filter="url(#glowSoft)"/>
+
+  <!-- Subtle grid pattern -->
+  <g opacity=".02" stroke="white" stroke-width="0.5">
+    <line x1="0" y1="80" x2="1200" y2="80"/>
+    <line x1="0" y1="610" x2="1200" y2="610"/>
+    <line x1="72" y1="0" x2="72" y2="700"/>
+    <line x1="372" y1="0" x2="372" y2="700"/>
+    <line x1="694" y1="0" x2="694" y2="700"/>
+    <line x1="1128" y1="0" x2="1128" y2="700"/>
+  </g>
+
+  <!-- ====== CHARACTER CARDS ====== -->
+  <g filter="url(#shadow)">
+    <rect x="72" y="80" width="300" height="530" rx="26" fill="url(#glass)" stroke="url(#cardBorder)" stroke-width="1.2"/>
+    <rect x="394" y="80" width="300" height="530" rx="26" fill="url(#glass)" stroke="url(#cardBorder)" stroke-width="1.2"/>
+    <rect x="716" y="80" width="412" height="530" rx="26" fill="url(#glass)" stroke="url(#cardBorder)" stroke-width="1.2"/>
+  </g>
+
+  <!-- Card inner top highlights -->
+  <g clip-path="url(#cardClip1)">
+    <ellipse cx="222" cy="80" rx="200" ry="60" fill="white" opacity=".02"/>
+    <path d="M72 80Q222 125 372 80" stroke="white" stroke-opacity=".04" fill="none"/>
+  </g>
+  <g clip-path="url(#cardClip2)">
+    <ellipse cx="544" cy="80" rx="200" ry="60" fill="white" opacity=".02"/>
+    <path d="M394 80Q544 125 694 80" stroke="white" stroke-opacity=".04" fill="none"/>
+  </g>
+  <g clip-path="url(#cardClip3)">
+    <ellipse cx="922" cy="80" rx="250" ry="60" fill="white" opacity=".02"/>
+    <path d="M716 80Q922 125 1128 80" stroke="white" stroke-opacity=".04" fill="none"/>
+  </g>
+
+  <!-- ====== CHARACTER 01 ====== -->
+  <g>
+    <!-- Avatar ring -->
+    <circle cx="222" cy="200" r="66" fill="#0E1210" stroke="#DFFF00" stroke-opacity=".4" stroke-width="1.5"/>
+    <circle cx="222" cy="200" r="60" fill="none" stroke="#DFFF00" stroke-opacity=".08" stroke-width="0.5" stroke-dasharray="4 6"/>
+
+    <!-- Character illustration -->
+    <circle cx="222" cy="185" r="31" fill="#A97858"/>
+    <circle cx="212" cy="180" r="4" fill="#1A1A1A"/>
+    <circle cx="232" cy="180" r="4" fill="#1A1A1A"/>
+    <circle cx="213" cy="179" r="1.5" fill="white" opacity=".6"/>
+    <circle cx="233" cy="179" r="1.5" fill="white" opacity=".6"/>
+    <path d="M216 195Q222 201 228 195" stroke="#8B5E3C" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M190 179C194 144 250 140 256 182C238 167 212 167 190 179Z" fill="#111"/>
+    <path d="M190 227C205 249 239 249 254 227L270 314H174L190 227Z" fill="#263A34"/>
+    <path d="M174 314C195 295 250 295 270 314V350H174V314Z" fill="#101513"/>
+    <path d="M190 227C205 249 239 249 254 227" stroke="#39FF14" stroke-opacity=".15" stroke-width="1" fill="none"/>
+
+    <!-- Name -->
+    <text x="104" y="391" fill="white" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="650" letter-spacing="0.5">CHARACTER 01</text>
+    <text x="104" y="417" fill="#6B736E" font-family="Inter,Arial,sans-serif" font-size="13" letter-spacing="0.5">Identity locked</text>
+
+    <!-- Status dots -->
+    <circle cx="104" cy="445" r="6" fill="#39FF14" opacity=".9">
+      <animate attributeName="opacity" values="0.9;0.3;0.9" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <text x="118" y="450" fill="#A7ADA9" font-family="Inter,Arial,sans-serif" font-size="13">Face · outfit · voice</text>
+
+    <!-- Bottom accent -->
+    <rect x="104" y="455" width="40" height="3" rx="1.5" fill="#39FF14" opacity=".4"/>
+  </g>
+
+  <!-- ====== CHARACTER 02 ====== -->
+  <g>
+    <circle cx="544" cy="200" r="66" fill="#0E1210" stroke="#00E6FF" stroke-opacity=".4" stroke-width="1.5"/>
+    <circle cx="544" cy="200" r="60" fill="none" stroke="#00E6FF" stroke-opacity=".08" stroke-width="0.5" stroke-dasharray="4 6"/>
+
+    <circle cx="544" cy="185" r="31" fill="#7D563E"/>
+    <circle cx="534" cy="180" r="4" fill="#1A1A1A"/>
+    <circle cx="554" cy="180" r="4" fill="#1A1A1A"/>
+    <circle cx="535" cy="179" r="1.5" fill="white" opacity=".6"/>
+    <circle cx="555" cy="179" r="1.5" fill="white" opacity=".6"/>
+    <path d="M538 195Q544 201 550 195" stroke="#6B4A35" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M512 182C516 146 571 139 579 180C560 164 534 165 512 182Z" fill="#171717"/>
+    <path d="M512 227C527 249 561 249 576 227L592 314H496L512 227Z" fill="#293B50"/>
+    <path d="M496 314C518 295 571 295 592 314V350H496V314Z" fill="#0D1217"/>
+    <path d="M512 227C527 249 561 249 576 227" stroke="#00E6FF" stroke-opacity=".15" stroke-width="1" fill="none"/>
+
+    <text x="426" y="391" fill="white" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="650" letter-spacing="0.5">CHARACTER 02</text>
+    <text x="426" y="417" fill="#6B736E" font-family="Inter,Arial,sans-serif" font-size="13" letter-spacing="0.5">Identity locked</text>
+
+    <circle cx="426" cy="445" r="6" fill="#00E6FF" opacity=".9">
+      <animate attributeName="opacity" values="0.9;0.3;0.9" dur="3s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+    <text x="440" y="450" fill="#A7ADA9" font-family="Inter,Arial,sans-serif" font-size="13">Face · outfit · voice</text>
+
+    <rect x="426" y="455" width="40" height="3" rx="1.5" fill="#00E6FF" opacity=".4"/>
+  </g>
+
+  <!-- ====== CONTINUITY PANEL ====== -->
+  <text x="750" y="127" fill="#6B736E" font-family="Inter,Arial,sans-serif" font-size="11" letter-spacing="3">CONTINUITY ENGINE</text>
+  <line x1="750" y1="135" x2="910" y2="135" stroke="#DFFF00" stroke-opacity=".15" stroke-width="1"/>
+
+  <rect x="750" y="155" width="344" height="74" rx="18" fill="#0A0D0C" stroke="white" stroke-opacity=".06"/>
+  <rect x="750" y="155" width="344" height="74" rx="18" fill="url(#glass)"/>
+
+  <circle cx="782" cy="192" r="13" fill="#DFFF00" opacity=".15"/>
+  <circle cx="782" cy="192" r="6" fill="#DFFF00" filter="url(#innerGlow)"/>
+  <text x="810" y="187" fill="white" font-family="Inter,Arial,sans-serif" font-size="15" font-weight="600">Locked character identity</text>
+  <text x="810" y="210" fill="#6B736E" font-family="Inter,Arial,sans-serif" font-size="12">Consistent across every episode</text>
+
+  <!-- ====== EPISODE TIMELINE ====== -->
+  <text x="750" y="270" fill="#6B736E" font-family="Inter,Arial,sans-serif" font-size="11" letter-spacing="3">EPISODES</text>
+  <line x1="750" y1="278" x2="830" y2="278" stroke="#39FF14" stroke-opacity=".15" stroke-width="1"/>
+
+  <!-- Timeline track -->
+  <line x1="785" y1="325" x2="1060" y2="325" stroke="#2A302D" stroke-width="2" stroke-linecap="round"/>
+  <line x1="785" y1="325" x2="975" y2="325" stroke="url(#timelineGrad)" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Timeline dots -->
+  <circle cx="785" cy="325" r="10" fill="url(#lime)" filter="url(#glow)"/>
+  <circle cx="785" cy="325" r="4" fill="white"/>
+
+  <circle cx="880" cy="325" r="9" fill="url(#lime)"/>
+  <circle cx="880" cy="325" r="3.5" fill="white" opacity=".9"/>
+
+  <circle cx="975" cy="325" r="9" fill="url(#lime)"/>
+  <circle cx="975" cy="325" r="3.5" fill="white" opacity=".9"/>
+
+  <circle cx="1060" cy="325" r="8" fill="#1E2421" stroke="#39413D" stroke-width="2"/>
+
+  <!-- Episode labels -->
+  <text x="770" y="359" fill="white" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="600">EP 01</text>
+  <text x="865" y="359" fill="#9BA29E" font-family="Inter,Arial,sans-serif" font-size="13">EP 02</text>
+  <text x="960" y="359" fill="#9BA29E" font-family="Inter,Arial,sans-serif" font-size="13">EP 03</text>
+  <text x="1042" y="359" fill="#5A625E" font-family="Inter,Arial,sans-serif" font-size="13">EP 04</text>
+
+  <!-- Progress indicator -->
+  <rect x="750" y="373" width="344" height="4" rx="2" fill="#1A1E1C"/>
+  <rect x="750" y="373" width="248" height="4" rx="2" fill="url(#timelineGrad)" opacity=".6"/>
+
+  <!-- ====== LOCKED BADGE ====== -->
+  <rect x="750" y="395" width="344" height="48" rx="15" fill="#DFFF00" fill-opacity=".05" stroke="#DFFF00" stroke-opacity=".25"/>
+
+  <!-- Lock icon -->
+  <path d="M773 413V409C773 401 779 395 787 395C795 395 801 401 801 409V413" stroke="#DFFF00" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <rect x="768" y="412" width="38" height="27" rx="6" fill="#DFFF00" fill-opacity=".12" stroke="#DFFF00" stroke-opacity=".6" stroke-width="1.5"/>
+  <circle cx="787" cy="424" r="3" fill="#DFFF00">
+    <animate attributeName="opacity" values="1;0.4;1" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+
+  <text x="820" y="426" fill="#D4E87A" font-family="Inter,Arial,sans-serif" font-size="14" font-weight="600" letter-spacing="1">IDENTITY LOCK ACTIVE</text>
+
+  <!-- ====== BOTTOM DECORATIVE ====== -->
+  <path d="M74 610H1126" stroke="url(#glowLine)" stroke-opacity=".15" stroke-width="1"/>
+  <circle cx="74" cy="610" r="3" fill="#DFFF00" opacity=".6"/>
+
+  <!-- Corner accents -->
+  <path d="M74 625H114" stroke="#DFFF00" stroke-opacity=".1" stroke-width="1"/>
+  <path d="M1086 625H1126" stroke="#DFFF00" stroke-opacity=".1" stroke-width="1"/>
+
+  <!-- Version tag -->
+  <text x="1080" y="655" fill="#3A403D" font-family="Inter,Arial,sans-serif" font-size="10" letter-spacing="2" text-anchor="end">V2.1</text>
+</svg>
